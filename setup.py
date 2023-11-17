@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README.md"), encoding="utf-8").read()
 
 
-version = "0.1.0"
+version = "0.1.1"
 
 install_requires = [
     "ipython>=8.0"
