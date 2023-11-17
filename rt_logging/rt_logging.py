@@ -122,11 +122,6 @@ class RealTimeLogMagics(Magics):
                 name = next(iter(self.names))
                 self._rm(name)
 
-    @line_magic
-    def test_logging(self, line):
-        # output_cell = display('', display_id=True)
-        self.output_cell.update({'text/plain': 'Hello, ss!'})
-
     def _print(self, name, top=None):
         value = self.names.get(name, None)
         if value:
