@@ -20,6 +20,8 @@ or download from [https://github.com/wilmerwang/ipython-rtlogging](https://githu
 cd ipython-rtlogging
 python3 setup.py install
 ```
+## Examples
+Please cheack [this notebook](doc/doc.ipynb)
 
 ## Usage
 Load rt_logging in IPython or IPython Notebook: 
