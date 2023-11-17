@@ -1,6 +1,6 @@
 # ipython-rtlogging
 ## Ipython Real Time Logging
-`ipython-rtlogging` is a tool that relies only on the Python standard library (except for IPython) and is used to capture and log the output streams of cells in real-time within IPython or IPython Notebook. It serves as an optional solution to address the issue of losing cell outputs after reconnecting to the Notebook.
+`ipython-rtlogging` is a tool that relies only on the Python standard library (except for IPython) and is used to capture and log the output streams of cells in real-time within IPython or IPython Notebook. It provides an optional solution to tackle the problem of losing cell outputs or not being able to monitor the progress of a running code after reconnecting to the Notebook.
 
 https://github.com/wilmerwang/ipython-rtlogging/assets/35020700/c3e99487-295a-4572-b0ba-f88e90696333
 
@@ -17,8 +17,8 @@ pip install ipython-rtlogging
 
 or download from [https://github.com/wilmerwang/ipython-rtlogging](https://github.com/wilmerwang/ipython-rtlogging) and:
 ```bash
-cd ipython-sql
-sudo python setup.py install
+cd ipython-rtlogging
+python3 setup.py install
 ```
 
 ## Usage
@@ -76,7 +76,7 @@ Docstring:
 load and print logging data
 
 optional arguments:
-  --name NAME  File Name to Load
+  --name NAME  File Names to Load
   --top TOP    top lines to Load
 ```
 

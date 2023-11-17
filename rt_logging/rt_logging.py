@@ -7,8 +7,10 @@ from IPython.core.magic import (
     cell_magic,
     magics_class,
 )
+from IPython.display import display, HTML, Code
 
 from .tee import StdoutTee, StderrTee
+from .tee2 import ipythonStream
 
 
 @magics_class
@@ -22,10 +24,10 @@ class RealTimeLogMagics(Magics):
         self.names = dict()
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('name', type=str, default='output', nargs='?',
+    @magic_arguments.argument('name', type=str, default='output',
         help="""File Name"""
     )
-    @magic_arguments.argument('buffering', type=int, default=-1, nargs='?',
+    @magic_arguments.argument('--buffering', type=int, default=1,
         help="""buffering size, 1 to select line buffering. Same as open(buffering)"""
     )
     @magic_arguments.argument('--no-stderr', action="store_true",
@@ -69,14 +71,15 @@ class RealTimeLogMagics(Magics):
         ll = args.ll
         for name, value in self.names.items():
             if ll:
-                print("+" * 10 + " " + name + " " + "+" * 10)
-                print(value)
+                header = "+" * 10 + " " + name + " " + "+" * 10
+                display(HTML('<h4 style="color: red;">{}</h4>'.format(header)))
+                display(Code(value))
             else:
-                print(name)
+                display(name)
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--name', type=str, default=None,
-        help="""File Name to Load"""
+    @magic_arguments.argument('--name', type=str, default=None, nargs='+',
+        help="""File Names to Load"""
     )
     @magic_arguments.argument('--top', type=int, default=None,
         help="""top lines to Load"""
@@ -89,13 +92,17 @@ class RealTimeLogMagics(Magics):
         top = args.top
 
         if name:
-            self._print(name, top)
+            if isinstance(name, list):
+                for n in name:
+                    self._print(n, top)
+            else:
+                self._print(name, top)
         else:
             for name, _ in self.names.items():
                 self._print(name, top)
 
     @magic_arguments.magic_arguments()
-    @magic_arguments.argument('--name', type=str, default=None,
+    @magic_arguments.argument('--name', type=str, default=None, nargs="+",
         help="""File Name to Load"""
     )
     @line_magic
@@ -105,34 +112,44 @@ class RealTimeLogMagics(Magics):
         name = args.name
 
         if name:
-            self._rm(name)
+            if isinstance(name, list):
+                for n in name:
+                    self._rm(n)
+            else:
+                self._rm(name)
         else:
             while self.names:
                 name = next(iter(self.names))
                 self._rm(name)
 
+    @line_magic
+    def test_logging(self, line):
+        # output_cell = display('', display_id=True)
+        self.output_cell.update({'text/plain': 'Hello, ss!'})
+
     def _print(self, name, top=None):
         value = self.names.get(name, None)
         if value:
-            header = "+" * 10 + name + " code" + "+" * 10
-            print(header)
-            print(value)
+            header = "+" * 10 + " " + name + " " + " code " + "+" * 10
+            display(HTML('<h4 style="color: red;">{}</h4>'.format(header)))
+            display(Code(value))
+
         files = [name+i for i in ['.stderr', '.stdout']]
         for file in files:
-            with open(file, 'r') as f:
-                lines = f.readlines()
+            if os.path.isfile(file):
+                with open(file, 'r') as f:
+                    lines = f.readlines()
+                if len(lines) > 0:
+                    if top and top != 0:
+                        if top > 0:
+                            lines = lines[:top]
+                        else:
+                            lines = lines[top:]
 
-            if top and top != 0:
-                if top > 0:
-                    lines = lines[:top]
-                else:
-                    lines = lines[top:]
+                    header2 = "="*12 + " " + file + " " + "="*12
+                    display(HTML('<h5 style="color: green;">{}</h5>'.format(header2)))
+                    print(''.join(lines))
 
-            nums = (len(header) - len(file)) // 2
-            print("-"*nums + file + "-"*nums)
-            print(''.join(lines))
-
-        print('\n\n')
 
     def _rm(self, name):
         files = [name+i for i in ['.stderr', '.stdout']]
