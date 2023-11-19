@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, "README.md"), encoding="utf-8").read()
 
 
-version = "0.1.1"
+version = "0.2.0"
 
 install_requires = [
     "ipython>=8.0"
@@ -26,6 +26,11 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    entry_points={
+        "console_scripts": [
+            "rt_logging = rt_logging.cli:main",
+        ]
+    },
     keywords="logging ipython real-time reconnection",
     packages=find_packages(),
     install_requires=install_requires

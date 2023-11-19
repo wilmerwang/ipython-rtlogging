@@ -1,4 +1,5 @@
 import os
+import json
 
 from IPython.core import magic_arguments
 from IPython.core.magic import (
@@ -10,7 +11,6 @@ from IPython.core.magic import (
 from IPython.display import display, HTML, Code
 
 from .tee import StdoutTee, StderrTee
-from .tee2 import ipythonStream
 
 
 @magics_class
@@ -22,6 +22,18 @@ class RealTimeLogMagics(Magics):
         # Default execution function used to actually run user code.
         # self.names = set()
         self.names = dict()
+
+        self.home = os.path.expanduser("~")
+        self.config_path = os.path.join(self.home, ".ipython-rtlogging.json")
+        self.log_dir = os.getcwd()
+        self._prepare()
+
+    def _prepare(self):
+        if not os.path.exists(self.config_path):
+            self.configs = {}
+        else:
+            with open(self.config_path, 'r') as f:
+                self.configs = json.load(f)
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('name', type=str, default='output',
@@ -46,6 +58,10 @@ class RealTimeLogMagics(Magics):
         out = not args.no_stdout
         err = not args.no_stderr
 
+        # log the runing cell 
+        self.configs[os.path.join(self.log_dir, name)] = cell
+        self._save_config()
+
         self.names[name] = cell
 
         if out and err:
@@ -58,7 +74,12 @@ class RealTimeLogMagics(Magics):
             with StderrTee(name+".stderr", 'w', buffering):
                 self.shell.run_cell(cell)
         else:
+            self.configs.pop(os.path.join(self.log_dir, name))
+            self._save_config()
             self.shell.run_cell(cell)
+
+        self.configs.pop(os.path.join(self.log_dir, name))
+        self._save_config()
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('--ll', action="store_true",
@@ -145,12 +166,15 @@ class RealTimeLogMagics(Magics):
                     display(HTML('<h5 style="color: green;">{}</h5>'.format(header2)))
                     print(''.join(lines))
 
-
     def _rm(self, name):
         files = [name+i for i in ['.stderr', '.stdout']]
         _ = [os.remove(file) for file in files if os.path.isfile(file)]
 
         self.names.pop(name, None)
+
+    def _save_config(self):
+        with open(self.config_path, 'w') as f:
+            json.dump(self.configs, f)
 
 
 def load_ipython_extension(ipython):
