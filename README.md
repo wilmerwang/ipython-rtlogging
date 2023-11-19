@@ -31,6 +31,34 @@ In [1]: %load_ext rt_logging
 
 ---
 
+Then can use CLI to monitor the progress of a running code:
+```bash
+# Simaple usage
+rt_logging
+
+# list the live running cells
+rt_logging -ls 
+
+# Select it 
+rt_logging -s 1
+
+# Helps
+rt_logging -h
+
+usage: rt_logging [-h] [--select SELECT] [--list] [--err_flag]
+
+Real Time Logging
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --select SELECT, -s SELECT
+                        Which progress to display?
+  --list, -ls
+  --err_flag, -e        Prioritize reading stderr file.
+```
+
+---
+
 There are some extesion magic method:
 ```bash
 In [2]: %%rt_logging?
@@ -48,8 +76,8 @@ positional arguments:
                open(buffering)
 
 optional arguments:
-  --no-stderr  Don't capture stderr.
-  --no-stdout  Don't capture stdout.
+  --no-stderr  Dont capture stderr.
+  --no-stdout  Dont capture stdout.
 ```
 
 ---
