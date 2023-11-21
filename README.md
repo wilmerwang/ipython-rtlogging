@@ -2,7 +2,12 @@
 ## Ipython Real Time Logging
 `ipython-rtlogging` is a tool that relies only on the Python standard library (except for IPython, Rich) and is used to capture and log the output streams of cells in real-time within IPython or IPython Notebook. It provides an optional solution to tackle the problem of losing cell outputs or not being able to monitor the progress of a running code after reconnecting to the Notebook.
 
-https://github.com/wilmerwang/ipython-rtlogging/assets/35020700/d566973c-4b57-460a-b3cf-c8dfbc05486e
+
+https://github.com/wilmerwang/ipython-rtlogging/assets/35020700/be3fa6e5-0d77-415b-a888-a3f70d1a7c12
+
+
+
+
 
 
 
@@ -10,6 +15,7 @@ https://github.com/wilmerwang/ipython-rtlogging/assets/35020700/d566973c-4b57-46
 
 ## Dependencies
 - ipython
+- rich
 
 ## Install
 Install the latest release with:
