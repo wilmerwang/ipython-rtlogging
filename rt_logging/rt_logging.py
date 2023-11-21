@@ -30,11 +30,11 @@ class RealTimeLogMagics(Magics):
         self._prepare()
 
     def _prepare(self):
-        if not os.path.exists(self.config_path):
-            self.configs = {}
-        else:
+        try:
             with open(self.config_path, 'r') as f:
                 self.configs = json.load(f)
+        except:
+            self.configs = {}
 
     @magic_arguments.magic_arguments()
     @magic_arguments.argument('name', type=str, default='output',
