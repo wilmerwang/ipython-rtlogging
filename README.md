@@ -1,6 +1,6 @@
 # ipython-rtlogging
 ## Ipython Real Time Logging
-`ipython-rtlogging` is a tool that relies only on the Python standard library (except for IPython) and is used to capture and log the output streams of cells in real-time within IPython or IPython Notebook. It provides an optional solution to tackle the problem of losing cell outputs or not being able to monitor the progress of a running code after reconnecting to the Notebook.
+`ipython-rtlogging` is a tool that relies only on the Python standard library (except for IPython, Rich) and is used to capture and log the output streams of cells in real-time within IPython or IPython Notebook. It provides an optional solution to tackle the problem of losing cell outputs or not being able to monitor the progress of a running code after reconnecting to the Notebook.
 
 https://github.com/wilmerwang/ipython-rtlogging/assets/35020700/c3e99487-295a-4572-b0ba-f88e90696333
 
@@ -36,25 +36,8 @@ Then can use CLI to monitor the progress of a running code:
 # Simaple usage
 rt_logging
 
-# list the live running cells
-rt_logging -ls 
-
-# Select it 
-rt_logging -s 1
-
-# Helps
-rt_logging -h
-
-usage: rt_logging [-h] [--select SELECT] [--list] [--err_flag]
-
-Real Time Logging
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --select SELECT, -s SELECT
-                        Which progress to display?
-  --list, -ls
-  --err_flag, -e        Prioritize reading stderr file.
+# OR Just list the running cell
+rt_logging -ls
 ```
 
 ---

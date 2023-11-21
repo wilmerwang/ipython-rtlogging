@@ -1,5 +1,6 @@
 import os
 import json
+import datetime
 
 from IPython.core import magic_arguments
 from IPython.core.magic import (
@@ -59,7 +60,11 @@ class RealTimeLogMagics(Magics):
         err = not args.no_stderr
 
         # log the runing cell 
-        self.configs[os.path.join(self.log_dir, name)] = cell
+        current_time = datetime.datetime.now()
+        current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
+        self.configs.setdefault(os.path.join(self.log_dir, name), {})['code'] = cell
+        self.configs[os.path.join(self.log_dir, name)]['start_date'] = current_time_str
+
         self._save_config()
 
         self.names[name] = cell
