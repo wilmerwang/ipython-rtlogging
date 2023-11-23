@@ -1,9 +1,9 @@
 import os
+import sys
 import json
 import argparse
-import signal
-from concurrent import futures
 from functools import partial
+from threading import Thread, Event
 
 from rich import print
 from rich.live import Live
@@ -14,10 +14,6 @@ from rich.box import ASCII
 
 from .tail import Tail
 
-
-def quit(signum, frame):
-    os._exit(0)
-signal.signal(signal.SIGINT, quit)
 
 CONFIG_PATH = os.path.join(os.path.expanduser("~"), ".ipython-rtlogging.json")
 OUT = [''] * 10
@@ -92,21 +88,30 @@ def update_panel(file_path, txt, live):
         live.update(Panel(generate_table(), title="[red]Output"))
 
 
-def worker(path, live):
+def worker(path, live, done):
     tail = Tail(path)
     func = partial(update_panel, live=live)
     tail.register_callback(func)
-    tail.follow(s=1)
+    tail.follow(done, s=1)
 
 
 def output_printer(stdout, stderr):
+    done = Event()
     with Live(generate_table(), refresh_per_second=4) as live:
+        worker1 = Thread(target=worker, args=(stdout, live, done))
+        worker2 = Thread(target=worker, args=(stderr, live, done))
+        worker1.start()
+        worker2.start()
 
-        with futures.ThreadPoolExecutor(max_workers=2) as executor:
-            results = [executor.submit(worker, i, live) for i in [stdout, stderr]]
-
-            for result in futures.as_completed(results):
+        try:
+            while True:
                 pass
+        except KeyboardInterrupt:
+            # cancel workers
+            done.set()
+
+        worker1.join()
+        worker2.join()
 
 
 def bar(msg):
@@ -119,7 +124,7 @@ def bar(msg):
 
     if is_file_empty(stdout) and is_file_empty(stdout):
         print("The program progress has not been updated. Please try again later.")
-        os._exit(0)
+        sys.exit()
 
     output_printer(stdout, stderr)
 
@@ -132,26 +137,25 @@ def main():
 
     if not runnings:
         print("No runing code. Exiting...")
-        os._exit(0)
+        sys.exit()
 
     if ls:
         ls_printer(runnings)
     else:
-        if len(runnings) > 0:
-            ls_printer(runnings)
-            while True:
-                try:
-                    select_str = input("Select Index (None means -1): ")
-                    if select_str == '':
-                        select_num = -1
-                    else:
-                        select_num = int(select_str)
+        ls_printer(runnings)
+        while True:
+            try:
+                select_str = input("Select Index (None means -1): ")
+                if select_str == '':
+                    select_num = -1
+                else:
+                    select_num = int(select_str)
 
-                    if -len(runnings) <= select_num < len(runnings):
-                        break
-                except ValueError:
-                    pass
-                print("Invalid input. Please enter a valid index.")
+                if -len(runnings) <= select_num < len(runnings):
+                    break
+            except ValueError:
+                pass
+            print("Invalid input. Please enter a valid index.")
 
         bar(list(runnings.items())[select_num])
 
